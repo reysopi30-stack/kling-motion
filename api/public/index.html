@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kling Motion Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--fd:'Space Grotesk',sans-serif;--fb:'Inter',sans-serif;--xs:clamp(.75rem,.7rem+.25vw,.875rem);--sm:clamp(.875rem,.8rem+.35vw,1rem);--base:clamp(1rem,.95rem+.25vw,1.125rem);--lg:clamp(1.125rem,1rem+.75vw,1.5rem);--s1:.25rem;--s2:.5rem;--s3:.75rem;--s4:1rem;--s5:1.25rem;--s6:1.5rem;--s8:2rem;--rsm:.375rem;--rmd:.5rem;--rlg:.75rem;--rxl:1rem;--r2xl:1.5rem;--rfull:9999px;--tr:180ms cubic-bezier(.16,1,.3,1)}
+[data-theme=dark]{--bg:#08080c;--s:#0e0e14;--s2:#13131a;--s3:#181820;--s4c:#1e1e27;--b:rgba(255,255,255,.06);--bs:rgba(255,255,255,.11);--t:#e2e2ef;--tm:#6a6a95;--tf:#2a2a3f;--p:#7c6aff;--ph:#9d8fff;--pg:rgba(124,106,255,.28);--ps:rgba(124,106,255,.09);--g:#2dd67c;--gs:rgba(45,214,124,.1);--r:#ff5757;--rs:rgba(255,87,87,.1);--o:#ff9f43;--os:rgba(255,159,67,.12);--cy:#22d3ee;--cys:rgba(34,211,238,.1);--sh1:0 1px 4px rgba(0,0,0,.5)}
+[data-theme=light]{--bg:#ededf5;--s:#fff;--s2:#f5f5fc;--s3:#ebebf4;--s4c:#e2e2ee;--b:rgba(0,0,0,.06);--bs:rgba(0,0,0,.11);--t:#0e0e18;--tm:#4e4e70;--tf:#aaaac0;--p:#5b48e8;--ph:#4535d4;--pg:rgba(91,72,232,.2);--ps:rgba(91,72,232,.08);--g:#1a9e5c;--gs:rgba(26,158,92,.1);--r:#d93636;--rs:rgba(217,54,54,.1);--o:#d06010;--os:rgba(208,96,16,.1);--cy:#0891b2;--cys:rgba(8,145,178,.1);--sh1:0 1px 4px rgba(0,0,0,.07)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{font-family:var(--fb);font-size:var(--base);background:var(--bg);color:var(--t);min-height:100dvh;line-height:1.6}
+img,video{display:block;max-width:100%}
+button{cursor:pointer;font:inherit;border:none;background:none}
+input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:820px;margin:0 auto;padding:var(--s5) var(--s4);display:flex;flex-direction:column;gap:var(--s4)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:var(--s4) var(--s5);background:var(--s);border:1px solid var(--b);border-radius:var(--r2xl);box-shadow:var(--sh1)}
+.logo{display:flex;align-items:center;gap:var(--s3)}
+.logo-ico{width:42px;height:42px;background:linear-gradient(135deg,var(--p),#a855f7);border-radius:var(--rlg);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px var(--pg);flex-shrink:0}
+.logo-name{font-family:var(--fd);font-size:var(--lg);font-weight:700}
+.logo-tag{font-size:var(--xs);color:var(--g);background:var(--gs);padding:2px var(--s2);border-radius:var(--rfull);border:1px solid rgba(45,214,124,.2)}
+.hdr-r{display:flex;gap:var(--s2)}
+.ico-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--s3);border:1px solid var(--b);border-radius:var(--rlg);color:var(--tm);font-size:15px;transition:all var(--tr);text-decoration:none}
+.steps{display:flex;align-items:center;padding:var(--s3) var(--s5);background:var(--s);border:1px solid var(--b);border-radius:var(--r2xl);overflow-x:auto;scrollbar-width:none;box-shadow:var(--sh1)}
+.steps::-webkit-scrollbar{display:none}
+.step{display:flex;align-items:center;gap:var(--s2);font-size:var(--xs);font-weight:500;color:var(--tf);white-space:nowrap;flex-shrink:0;transition:color var(--tr)}
+.step.active{color:var(--p)}.step.done{color:var(--g)}
+.sn{width:22px;height:22px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.step.active .sn{background:var(--ps)}.step.done .sn{background:var(--gs)}
+.sa{margin:0 var(--s3);color:var(--tf);font-size:11px;flex-shrink:0}
+.card{background:var(--s);border:1px solid var(--b);border-radius:var(--r2xl);padding:var(--s5);box-shadow:var(--sh1)}
+.ct{font-family:var(--fd);font-size:var(--xs);font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.08em;margin-bottom:var(--s4);display:flex;align-items:center;gap:var(--s2)}
+.sb{width:20px;height:20px;background:var(--ps);color:var(--p);border-radius:var(--rfull);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+label{display:block;font-size:var(--sm);font-weight:500;color:var(--tm);margin-bottom:var(--s2)}
+.ig{margin-bottom:var(--s4)}
+.inp{width:100%;padding:var(--s3) var(--s4);background:var(--s3);border:1px solid var(--bs);border-radius:var(--rlg);color:var(--t);font-size:var(--sm);transition:border-color var(--tr),box-shadow var(--tr)}
+.inp:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px var(--ps)}
+.inp::placeholder{color:var(--tf)}
+textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
+.pw{position:relative}.pw .inp{padding-right:42px}
+.tp{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--tf);font-size:14px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+@media(max-width:480px){.r2{grid-template-columns:1fr}}
+select.inp{appearance:none;background-image:url("image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%236a6a95' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
+.hint{font-size:var(--xs);color:var(--tf);margin-top:var(--s1);line-height:1.4}
+a.lnk{color:var(--p);text-decoration:none}
+.upload-pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+@media(max-width:520px){.upload-pair{grid-template-columns:1fr}}
+.uz{border:2px dashed var(--bs);border-radius:var(--r2xl);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s2);cursor:pointer;transition:all var(--tr);text-align:center;padding:var(--s6) var(--s4);background:var(--s3);overflow:hidden;min-height:180px;position:relative}
+.uz:hover,.uz.drag{border-color:var(--p);background:var(--ps)}
+.uz.done{border-style:solid;border-color:var(--g)}
+.uz input{display:none}
+.uz-ico{font-size:32px}
+.uz-label{font-family:var(--fd);font-size:var(--sm);font-weight:600;color:var(--t)}
+.uz-sub{font-size:var(--xs);color:var(--tm)}
+.uz-preview{position:absolute;inset:0;border-radius:calc(var(--r2xl) - 2px);overflow:hidden}
+.uz-preview img,.uz-preview video{width:100%;height:100%;object-fit:cover}
+.uz-overlay{position:absolute;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--tr)}
+.uz:hover .uz-overlay{opacity:1}
+.uz-change{font-size:var(--xs);font-weight:600;color:#fff;background:rgba(124,106,255,.8);padding:var(--s2) var(--s4);border-radius:var(--rfull)}
+.uz-status{position:absolute;bottom:var(--s2);left:var(--s2);right:var(--s2);background:rgba(0,0,0,.75);border-radius:var(--rlg);padding:4px var(--s3);font-size:var(--xs);font-weight:500;text-align:center}
+.uz-status.ok{color:var(--g)}.uz-status.uploading{color:var(--p)}.uz-status.err{color:var(--r)}
+.uz-spin{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.info-box{display:flex;gap:var(--s3);padding:var(--s3) var(--s4);border-radius:var(--rlg);font-size:var(--sm);line-height:1.5;margin-bottom:var(--s4)}
+.info-box.blue{background:var(--cys);color:var(--cy);border:1px solid rgba(34,211,238,.2)}
+.info-box.warn{background:var(--os);color:var(--o);border:1px solid rgba(255,159,67,.2)}
+.info-box.ok{background:var(--gs);color:var(--g);border:1px solid rgba(45,214,124,.2)}
+.orient-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-bottom:var(--s4)}
+.orient-card{border:2px solid var(--b);border-radius:var(--rxl);padding:var(--s4);cursor:pointer;transition:all var(--tr);background:var(--s3)}
+.orient-card:hover,.orient-card.sel{border-color:var(--p);background:var(--ps)}
+.orient-card.sel{box-shadow:0 0 0 1px var(--p)}
+.orient-ico{font-size:24px;margin-bottom:var(--s2)}
+.orient-title{font-weight:600;font-size:var(--sm);margin-bottom:2px}
+.orient-card.sel .orient-title{color:var(--p)}
+.orient-desc{font-size:var(--xs);color:var(--tm);line-height:1.4}
+.btn{display:flex;align-items:center;justify-content:center;gap:var(--s2);padding:var(--s3) var(--s5);font-weight:600;font-size:var(--sm);border-radius:var(--rlg);transition:all var(--tr);min-height:48px;cursor:pointer}
+.btn-g{background:var(--g);color:#000;border:none;box-shadow:0 0 20px var(--gs);width:100%}
+.btn-g:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-g:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-s{background:var(--s3);color:var(--t);border:1px solid var(--bs)}
+.btn-s:hover{background:var(--s4c)}
+.btn-p{background:var(--p);color:#fff;border:none;box-shadow:0 0 20px var(--pg)}
+.btn-p:hover{background:var(--ph);transform:translateY(-1px)}
+.btn-p:disabled{opacity:.45;cursor:not-allowed}
+.brow{display:flex;gap:var(--s3);flex-wrap:wrap}
+.slw{display:flex;align-items:center;gap:var(--s3)}
+input[type=range]{flex:1;height:3px;appearance:none;background:var(--s4c);border-radius:var(--rfull);outline:none}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;background:var(--p);border-radius:50%;cursor:pointer}
+.sts{padding:var(--s3) var(--s4);border-radius:var(--rlg);font-size:var(--sm);font-weight:500;display:none;align-items:center;gap:var(--s2);margin-top:var(--s3);line-height:1.4}
+.sts.on{display:flex}.sts.info{background:var(--ps);color:var(--p)}.sts.ok{background:var(--gs);color:var(--g)}.sts.err{background:var(--rs);color:var(--r)}
+.vid-box{width:100%;background:var(--s3);border:1px solid var(--bs);border-radius:var(--rxl);min-height:300px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;margin-top:var(--s4)}
+.vid-ph{display:flex;flex-direction:column;align-items:center;gap:var(--s2);color:var(--tf);padding:var(--s8);text-align:center}
+.vid-ph .ico{font-size:40px}.vid-ph h3{font-size:var(--base);color:var(--tm)}
+.vid-ph p{font-size:var(--sm);max-width:260px;line-height:1.5}
+#pvVid{width:100%;display:none;border-radius:calc(var(--rxl) - 1px)}
+.ldr{position:absolute;inset:0;background:rgba(0,0,0,.8);display:none;flex-direction:column;align-items:center;justify-content:center;gap:var(--s4);backdrop-filter:blur(8px)}
+.ldr.on{display:flex}
+.spin-ring{width:52px;height:52px;border:3px solid var(--ps);border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite}
+.ldr-t{font-size:var(--sm);color:var(--t);font-weight:600;text-align:center}
+.ldr-sub{font-size:var(--xs);color:var(--tm);text-align:center;max-width:220px}
+.pbar{width:240px;height:4px;background:var(--s4c);border-radius:var(--rfull);overflow:hidden}
+.pfill{height:100%;background:linear-gradient(90deg,var(--p),#a855f7);border-radius:var(--rfull);width:0%;transition:width .5s ease}
+@media(max-width:580px){.wrap{padding:var(--s3)}.card{padding:var(--s4)}.hdr{padding:var(--s3) var(--s4)}.logo-name{font-size:var(--base)}.orient-grid{grid-template-columns:1fr}.logo-tag{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hdr">
+  <div class="logo">
+    <div class="logo-ico">🎭</div>
+    <div><div class="logo-name">Kling Motion Control</div></div>
+    <span class="logo-tag">Motion 3.0 Pro</span>
+  </div>
+  <div class="hdr-r">
+    <button class="ico-btn" data-tt>🌙</button>
+    <a href="https://www.freepik.com/api" target="_blank" rel="noopener noreferrer" class="ico-btn">📖</a>
+  </div>
+</header>
+<div class="steps">
+  <div class="step active" id="s1u"><div class="sn">1</div><span>API Key</span></div>
+  <div class="sa">›</div>
+  <div class="step" id="s2u"><div class="sn">2</div><span>Gambar + Video</span></div>
+  <div class="sa">›</div>
+  <div class="step" id="s3u"><div class="sn">3</div><span>Pengaturan</span></div>
+  <div class="sa">›</div>
+  <div class="step" id="s4u"><div class="sn">4</div><span>Generate</span></div>
+  <div class="sa">›</div>
+  <div class="step" id="s5u"><div class="sn">✓</div><span>Hasil</span></div>
+</div>
+<div class="info-box blue">
+  <span style="font-size:20px;flex-shrink:0">✨</span>
+  <div><strong>Cara kerja:</strong> Upload foto karakter + video referensi gerakan. Kling transfer gerakan dari video ke karaktermu — wajah & penampilan tetap sama!</div>
+</div>
+<div class="card">
+  <div class="ct"><span class="sb">1</span>Freepik API Key</div>
+  <div class="ig" style="margin-bottom:0">
+    <label>🔑 API Key <span style="color:var(--r)">*</span></label>
+    <div class="pw">
+      <input type="password" id="fpKey" class="inp" placeholder="fp_xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+      <button class="tp" onclick="tpw(this)">👁</button>
+    </div>
+    <p class="hint">Daftar gratis di <a href="https://www.freepik.com/api" target="_blank" rel="noopener noreferrer" class="lnk">freepik.com/api</a> — dapat $5 kredit gratis.</p>
+  </div>
+</div>
+<div class="card">
+  <div class="ct"><span class="sb">2</span>Upload Gambar & Video Referensi</div>
+  <div class="upload-pair">
+    <div>
+      <label style="margin-bottom:var(--s2)">🖼️ Foto Karakter</label>
+      <div class="uz" id="uzImg" onclick="document.getElementById('fiImg').click()" ondragover="dov(event,'uzImg')" ondragleave="dol('uzImg')" ondrop="ddrop(event,'img')">
+        <input type="file" id="fiImg" accept="image/jpeg,image/png,image/webp" onchange="fselImg(event)">
+        <span class="uz-ico">🧑</span>
+        <div class="uz-label">Tap Upload Foto</div>
+        <div class="uz-sub">JPG PNG WebP · Maks 10MB</div>
+        <div id="uzImgPv" class="uz-preview" style="display:none">
+          <img id="pvImgEl" alt="">
+          <div class="uz-overlay"><div class="uz-change">🔄 Ganti</div></div>
+        </div>
+        <div id="uzImgSts" class="uz-status" style="display:none"></div>
+      </div>
+    </div>
+    <div>
+      <label style="margin-bottom:var(--s2)">🎥 Video Referensi</label>
+      <div class="uz" id="uzVid" onclick="document.getElementById('fiVid').click()" ondragover="dov(event,'uzVid')" ondragleave="dol('uzVid')" ondrop="ddrop(event,'vid')">
+        <input type="file" id="fiVid" accept="video/mp4,video/quicktime,video/webm" onchange="fselVid(event)">
+        <span class="uz-ico">🎬</span>
+        <div class="uz-label">Tap Upload Video</div>
+        <div class="uz-sub">MP4 MOV · 3–30 detik · Maks 100MB</div>
+        <div id="uzVidPv" class="uz-preview" style="display:none">
+          <video id="pvVidRef" muted loop playsinline autoplay></video>
+          <div class="uz-overlay"><div class="uz-change">🔄 Ganti</div></div>
+        </div>
+        <div id="uzVidSts" class="uz-status" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+  <div class="info-box warn" style="margin-top:var(--s4);margin-bottom:0">
+    <span style="flex-shrink:0">⚡</span>
+    <div>File diupload ke hosting gratis untuk URL publik yang dibutuhkan Kling API.</div>
+  </div>
+</div>
+<div class="card">
+  <div class="ct"><span class="sb">3</span>⚙️ Pengaturan</div>
+  <label style="margin-bottom:var(--s3)">🧭 Mode Orientasi</label>
+  <div class="orient-grid">
+    <div class="orient-card sel" id="oVid" onclick="selOrient('video')">
+      <div class="orient-ico">🎥</div>
+      <div class="orient-title">Mode Video</div>
+      <div class="orient-desc">Gerakan ikuti video. Cocok gerakan kompleks. Output hingga 30 detik.</div>
+    </div>
+    <div class="orient-card" id="oImg" onclick="selOrient('image')">
+      <div class="orient-ico">🖼️</div>
+      <div class="orient-title">Mode Gambar</div>
+      <div class="orient-desc">Orientasi ikuti gambar. Cocok gerakan kamera. Output hingga 10 detik.</div>
+    </div>
+  </div>
+  <div class="r2">
+    <div class="ig">
+      <label>Model</label>
+      <select id="vTier" class="inp">
+        <option value="pro">✨ Kling 3 Pro (1080p)</option>
+        <option value="std" selected>⚡ Kling 3 Standard (720p)</option>
+      </select>
+    </div>
+    <div class="ig">
+      <label>CFG Scale: <span id="cfgV">0.5</span></label>
+      <div class="slw" style="margin-top:var(--s2)">
+        <span style="font-size:var(--xs);color:var(--tf)">Bebas</span>
+        <input type="range" id="cfg" min="0" max="1" step="0.1" value="0.5" oninput="document.getElementById('cfgV').textContent=this.value">
+        <span style="font-size:var(--xs);color:var(--tf)">Ketat</span>
+      </div>
+    </div>
+  </div>
+  <div class="ig" style="margin-bottom:0">
+    <label>✍️ Prompt (opsional)</label>
+    <textarea id="vPr" class="inp" rows="2" placeholder="cinematic lighting, high quality…"></textarea>
+  </div>
+</div>
+<div class="card">
+  <div class="ct"><span class="sb">4</span>🚀 Generate Video</div>
+  <div id="readyRow" style="display:none;margin-bottom:var(--s4)">
+    <div class="info-box ok" style="margin-bottom:0">
+      <span>✅</span>
+      <div><img id="rThumb" alt="" style="width:36px;height:36px;object-fit:cover;border-radius:var(--rmd);display:inline-block;vertical-align:middle;margin-right:6px"><strong>Gambar & Video siap — klik Generate!</strong></div>
+    </div>
+  </div>
+  <button class="btn btn-g" onclick="genVid()" id="btnGV">🎭 Generate Motion Control Video</button>
+  <div id="vidSts" class="sts"></div>
+  <div class="vid-box">
+    <div class="vid-ph" id="vidPh">
+      <span class="ico">🎭</span><h3>Hasil Video</h3>
+      <p>Upload gambar & video referensi lalu klik Generate</p>
+    </div>
+    <video id="pvVid" controls loop playsinline></video>
+    <div class="ldr" id="vidLdr">
+      <div class="spin-ring"></div>
+      <div class="ldr-t" id="vidLT">Memproses…</div>
+      <div class="ldr-sub" id="vidLS">Kling menganalisis gerakan</div>
+      <div class="pbar"><div class="pfill" id="vidPf"></div></div>
+    </div>
+  </div>
+  <div class="brow" id="dlRow" style="display:none;margin-top:var(--s4)">
+    <button class="btn btn-p" onclick="dlVid()" style="flex:1">⬇️ Download Video</button>
+    <button class="btn btn-s" onclick="cpUrl()">🔗 Copy URL</button>
+    <button class="btn btn-s" onclick="resetAll()">🔄 Buat Lagi</button>
+  </div>
+</div>
+<div style="text-align:center;padding:var(--s4);color:var(--tf);font-size:var(--xs)">Kling Motion Control · Freepik API × Kling 3.0 · 🔒 API Key tidak disimpan</div>
+</div>
+<script>
+const S={imgUrl:null,vidRefUrl:null,vidOutUrl:null,orient:'video',vidInterval:null};
+(()=>{const b=document.querySelector('[data-tt]'),r=document.documentElement;let t='dark';
+r.setAttribute('data-theme',t);b&&b.addEventListener('click',()=>{t=t==='dark'?'light':'dark';r.setAttribute('data-theme',t);b.textContent=t==='dark'?'🌙':'☀️'})})();
+function tpw(b){const e=document.getElementById('fpKey');e.type=e.type==='password'?'text':'password';b.textContent=e.type==='password'?'👁':'🙈'}
+function setStep(n){for(let i=1;i<=5;i++){const e=document.getElementById('s'+i+'u');e.classList.remove('active','done');if(i<n)e.classList.add('done');else if(i===n)e.classList.add('active')}}
+function selOrient(v){S.orient=v;document.getElementById('oVid').classList.toggle('sel',v==='video');document.getElementById('oImg').classList.toggle('sel',v==='image')}
+function dov(e,id){e.preventDefault();document.getElementById(id).classList.add('drag')}
+function dol(id){document.getElementById(id).classList.remove('drag')}
+function ddrop(e,type){e.preventDefault();document.getElementById(type==='img'?'uzImg':'uzVid').classList.remove('drag');const f=e.dataTransfer.files[0];if(f){type==='img'?procImg(f):procVid(f)}}
+function fselImg(e){const f=e.target.files[0];if(f)procImg(f)}
+function fselVid(e){const f=e.target.files[0];if(f)procVid(f)}
+function setUzSts(id,type,msg){const el=document.getElementById(id);el.style.display='block';el.className='uz-status '+type;el.innerHTML=(type==='uploading'?'<span class="uz-spin"></span>':'')+msg}
+async function procImg(file){
+if(!file.type.match(/image\/(jpeg|png|webp)/)){setUzSts('uzImgSts','err','❌ Format tidak didukung');return}
+if(file.size>10*1024*1024){setUzSts('uzImgSts','err','❌ Maks 10MB');return}
+const r=new FileReader();r.onload=ev=>{document.getElementById('pvImgEl').src=ev.target.result;document.getElementById('uzImgPv').style.display='block';document.getElementById('uzImg').classList.add('done')};r.readAsDataURL(file);
+setUzSts('uzImgSts','uploading','Mengupload foto…');
+try{const url=await tryUpload(file);S.imgUrl=url;setUzSts('uzImgSts','ok','✅ Foto siap!');document.getElementById('rThumb').src=document.getElementById('pvImgEl').src;checkReady();setStep(2)}
+catch(e){setUzSts('uzImgSts','err','❌ '+e.message)}}
+async function procVid(file){
+if(!file.type.match(/video\/(mp4|quicktime|webm)/)){setUzSts('uzVidSts','err','❌ Format harus MP4/MOV');return}
+if(file.size>100*1024*1024){setUzSts('uzVidSts','err','❌ Maks 100MB');return}
+document.getElementById('pvVidRef').src=URL.createObjectURL(file);document.getElementById('uzVidPv').style.display='block';document.getElementById('uzVid').classList.add('done');
+setUzSts('uzVidSts','uploading','Mengupload video…');
+try{const u=await tryUpload(file);S.vidRefUrl=u;setUzSts('uzVidSts','ok','✅ Video siap!');checkReady();setStep(2)}
+catch(e){setUzSts('uzVidSts','err','❌ '+e.message)}}
+function checkReady(){if(S.imgUrl&&S.vidRefUrl){document.getElementById('readyRow').style.display='block';setStep(3)}}
+async function tryUpload(file){
+try{const fd=new FormData();fd.append('file',file);const r=await fetch('https://0x0.st',{method:'POST',body:fd});if(r.ok){const t=await r.text();const u=t.trim();if(u.startsWith('http'))return u;}}catch(e){}
+try{const fd=new FormData();fd.append('reqtype','fileupload');fd.append('fileToUpload',file);const r=await fetch('https://catbox.moe/user/api.php',{method:'POST',body:fd});if(r.ok){const t=await r.text();const u=t.trim();if(u.startsWith('http'))return u;}}catch(e){}
+try{const fd=new FormData();fd.append('reqtype','fileupload');fd.append('time','72h');fd.append('fileToUpload',file);const r=await fetch('https://litterbox.catbox.moe/resources/internals/api.php',{method:'POST',body:fd});if(r.ok){const t=await r.text();const u=t.trim();if(u.startsWith('http'))return u;}}catch(e){}
+throw new Error('Semua layanan upload tidak tersedia');}
+function setPf(v){document.getElementById('vidPf').style.width=v+'%'}
+function setSts(id,t,msg){const e=document.getElementById(id);e.className='sts on '+t;e.innerHTML='<span>'+(t==='ok'?'✅':t==='err'?'❌':'ℹ️')+'</span> '+msg}
+function clrSts(id){const e=document.getElementById(id);e.className='sts';e.textContent=''}
+async function callProxy(url,method,body,apiKey){
+const r=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url,method,body,apiKey})});
+return r;}
+async function genVid(){
+const k=document.getElementById('fpKey').value.trim();
+if(!k){alert('Masukkan Freepik API Key!');return}
+if(!S.imgUrl){alert('Upload foto karakter dulu!');return}
+if(!S.vidRefUrl){alert('Upload video referensi dulu!');return}
+const tier=document.getElementById('vTier').value;
+const cfg=parseFloat(document.getElementById('cfg').value);
+const prompt=document.getElementById('vPr').value.trim()||undefined;
+const btn=document.getElementById('btnGV');btn.disabled=true;
+clrSts('vidSts');setStep(4);
+const ldr=document.getElementById('vidLdr');ldr.classList.add('on');
+document.getElementById('vidPh').style.display='none';
+document.getElementById('pvVid').style.display='none';
+document.getElementById('dlRow').style.display='none';
+setPf(8);document.getElementById('vidLT').textContent='Mengirim ke Kling…';
+document.getElementById('vidLS').textContent='Menganalisis gerakan referensi';
+try{
+const ep='kling-v3-motion-control-'+(tier==='pro'?'pro':'std');
+const apiUrl='https://api.freepik.com/v1/ai/video/'+ep;
+const body={image_url:S.imgUrl,video_url:S.vidRefUrl,cfg_scale:cfg,character_orientation:S.orient};
+if(prompt)body.prompt=prompt;
+const res=await callProxy(apiUrl,'POST',body,k);
+if(!res.ok){const e=await res.json().catch(()=>({}));const m=e.message||e.error||'HTTP '+res.status;
+if(res.status===402)throw new Error('Kredit tidak cukup — top up di freepik.com/api');
+if(res.status===401)throw new Error('API Key tidak valid');
+if(res.status===422)throw new Error('Parameter error: '+JSON.stringify(e).slice(0,200));
+throw new Error(m)}
+const data=await res.json();setPf(18);
+let tid=data.task_id||(data.data&&(data.data.task_id||data.data.id))||data.id;
+if(!tid)throw new Error('Task ID tidak ditemukan: '+JSON.stringify(data).slice(0,200));
+setSts('vidSts','info','⏳ Task: '+tid+' — Memproses (30–180 detik)…');
+pollVid(tid,k,ep)}
+catch(e){ldr.classList.remove('on');setSts('vidSts','err',e.message);document.getElementById('vidPh').style.display='flex';btn.disabled=false;setStep(3)}}
+function pollVid(tid,k,ep){let n=0;const MAX=120;
+if(S.vidInterval)clearInterval(S.vidInterval);
+const msgs=['Menganalisis pose dan gerakan…','Mentransfer gerakan ke karakter…','Merender frame demi frame…','Menyelesaikan detail ekspresi…','Hampir selesai…'];
+S.vidInterval=setInterval(async()=>{n++;
+setPf(Math.min(18+(n/MAX)*78,95));
+document.getElementById('vidLS').textContent=msgs[Math.min(Math.floor(n/24),msgs.length-1)];
+document.getElementById('vidLT').textContent='Memproses… ('+(n*4)+'s)';
+if(n>MAX){clearInterval(S.vidInterval);document.getElementById('vidLdr').classList.remove('on');setSts('vidSts','err','Timeout. Coba lagi.');document.getElementById('vidPh').style.display='flex';document.getElementById('btnGV').disabled=false;setStep(3);return}
+try{
+const pollUrl='https://api.freepik.com/v1/ai/video/'+ep+'/'+tid;
+const res=await callProxy(pollUrl,'GET',null,k);
+const data=await res.json();const d=data.data||data;const st=(d.status||'').toUpperCase();
+if(st==='COMPLETED'||st==='SUCCEEDED'||st==='DONE'||st==='SUCCESS'){
+clearInterval(S.vidInterval);setPf(100);
+let vu=d.video_url||(d.result&&d.result.video_url)||(d.output&&d.output.video)||null;
+if(!vu){const m=JSON.stringify(d).match(/"(?:video_url|url|video)":"(https?:[^"]+\.mp4[^"]*)"/);if(m)vu=m[1]}
+if(vu)showVid(vu);else throw new Error('URL video tidak ditemukan.')}
+else if(st==='FAILED'||st==='ERROR'){clearInterval(S.vidInterval);document.getElementById('vidLdr').classList.remove('on');setSts('vidSts','err','Gagal: '+(d.message||st));document.getElementById('vidPh').style.display='flex';document.getElementById('btnGV').disabled=false;setStep(3)}}
+catch(e){document.getElementById('vidLS').textContent='Menunggu respons…'}},4000)}
+function showVid(url){
+document.getElementById('vidLdr').classList.remove('on');S.vidOutUrl=url;
+const v=document.getElementById('pvVid');v.src=url;v.style.display='block';
+document.getElementById('dlRow').style.display='flex';
+setSts('vidSts','ok','🎉 Berhasil! Gerakan berhasil ditransfer ke karaktermu.');
+document.getElementById('btnGV').disabled=false;setStep(5);
+setTimeout(()=>document.getElementById('dlRow').scrollIntoView({behavior:'smooth',block:'center'}),300)}
+function dlVid(){if(!S.vidOutUrl)return;const a=document.createElement('a');a.href=S.vidOutUrl;a.download='kling-motion-'+Date.now()+'.mp4';a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();document.body.removeChild(a)}
+function cpUrl(){if(!S.vidOutUrl)return;navigator.clipboard.writeText(S.vidOutUrl).then(()=>setSts('vidSts','ok','✅ URL di-copy!')).catch(()=>prompt('Copy URL:',S.vidOutUrl))}
+function resetAll(){if(S.vidInterval)clearInterval(S.vidInterval);const v=document.getElementById('pvVid');v.src='';v.style.display='none';document.getElementById('vidPh').style.display='flex';document.getElementById('dlRow').style.display='none';document.getElementById('btnGV').disabled=false;clrSts('vidSts');setPf(0);document.getElementById('vidLdr').classList.remove('on');S.vidOutUrl=null;setStep(3)}
+</script>
+</body>
+</html>
